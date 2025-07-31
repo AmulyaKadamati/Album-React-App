@@ -43,7 +43,7 @@ const AddAlbumForm = () => {
       isValid = false;
     }
     if (!formData.description.trim()) {
-      newErrors.name = 'Description is required';
+      newErrors.name = 'Description is Required';
       isValid = false;
     }
 
