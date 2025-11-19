@@ -15,20 +15,30 @@ public class SeedData implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        // TODO Auto-generated method stub
 
         Account account01 = new Account();
         Account account02 = new Account();
-
+       
+        if (AccountService.findByEmail("user@user.com") == null){
         account01.setEmail("user@user.com");
         account01.setPassword("pass987");
         account01.setAuthorities(Authority.USER.toString());
         AccountService.save(account01);
+        }
 
+        if (AccountService.findByEmail("user@user.com") == null){
         account02.setEmail("admin@admin.com");
         account02.setPassword("pass987");
-        account02.setAuthorities(Authority.ADMIN.toString() + " " + Authority.USER.toString());
+        account02.setAuthorities(Authority.ADMIN.toString() +" "+ Authority.USER.toString()); // we can multiple authorites to user using space. spring security will accept it
         AccountService.save(account02);
-
+        }
+   
+        
     }
+    
 
+
+
+    
 }
