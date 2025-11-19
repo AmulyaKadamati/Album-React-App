@@ -1,171 +1,148 @@
 import axios from 'axios';
 
-const API_VERSION = "/api/v1"
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:8080";
+const API_VERSION = "/api/v1";
 
-const fetchGetData = (uri) =>{
-    const url = `${API_VERSION}${uri}`;
-    return axios.get(url)           // it returns a promise
-    .catch((error) => {
-        // handle exceptions/errors
-        console.error('Error fetching data from url: ', url);
-        // You can throw error again if u want to handle it elsewhere
-        throw error;
-    });
+
+const fetchGetData = (uri) => {
+    const url = `${API_BASE}${API_VERSION}${uri}`;
+    return axios.get(url)
+        .catch((error) => {
+            console.error('Error fetching data from url:', url);
+            throw error;
+        });
 };
 
-// to send token
-const fetchPostData = (uri, payload) =>{
-    const url = `${API_VERSION}${uri}`;
+// Generic POST without auth
+const fetchPostData = (uri, payload) => {
+    const url = `${API_BASE}${API_VERSION}${uri}`;
     return axios.post(url, payload)
-    .catch((error) => {
-        // handle exceptions/errors
-        console.error('Error fetching data from url: ', url);
-        // You can throw error again if u want to handle it elsewhere
-        throw error;
-
-});
+        .catch((error) => {
+            console.error('Error fetching data from url:', url);
+            throw error;
+        });
 };
 
-//to add Album
-const fetchPostDataWithAuth = (uri, payload) =>{
+// POST with auth (token)
+const fetchPostDataWithAuth = (uri, payload) => {
     const token = localStorage.getItem('token');
-
-    const url = `${API_VERSION}${uri}`;
+    const url = `${API_BASE}${API_VERSION}${uri}`;
     return axios.post(url, payload, {
-        headers :{
-        "accept": "application/json",                                 // passing headers
-        "content-type": "application/json",
-        "Authorization" : `Bearer ${token}`,
-    },
-    })
-    .catch((error) => {
-        // handle exceptions/errors
-        console.error('Error fetching data from url: ', url, error.message);
-        // You can throw error again if u want to handle it elsewhere
-        throw error;
-    });
-};
-
-const fetchPutDataWithAuth = (uri, payload) =>{
-    const token = localStorage.getItem('token');
-
-    const url = `${API_VERSION}${uri}`;
-    return axios.put(url, payload, {
-        headers :{
-        "accept": "application/json",                                 // passing headers
-        "content-type": "application/json",
-        "Authorization" : `Bearer ${token}`,
-    },
-    })
-    .catch((error) => {
-        // handle exceptions/errors
-        console.error('Error fetching data from url: ', url, error.message);
-        // You can throw error again if u want to handle it elsewhere
-        throw error;
-    });
-};
-
-// to upload photos
-const fetchPostFileUploadWithAuth = async(uri, formData) =>{
-    const token = localStorage.getItem('token');
-
-    const url = `${API_VERSION}${uri}`;
-    try{
-    const response = await axios.post(url, formData, {
         headers: {
-             "accept" : "*/*",
-             "Authorization" : `Bearer ${token}`,
-             'Content-Type': 'multipart/form-data' 
-            },
-      });
-    return response;
-    }
-    catch(error){
-        // handle exceptions/errors
-        console.error('Error fetching data from url: ', url, error.message);
-        throw(error);
+            "accept": "application/json",
+            "content-type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    }).catch((error) => {
+        console.error('Error fetching data from url:', url, error.message);
+        throw error;
+    });
+};
+
+// PUT with auth
+const fetchPutDataWithAuth = (uri, payload) => {
+    const token = localStorage.getItem('token');
+    const url = `${API_BASE}${API_VERSION}${uri}`;
+    return axios.put(url, payload, {
+        headers: {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    }).catch((error) => {
+        console.error('Error fetching data from url:', url, error.message);
+        throw error;
+    });
+};
+
+// File upload with auth
+const fetchPostFileUploadWithAuth = async (uri, formData) => {
+    const token = localStorage.getItem('token');
+    const url = `${API_BASE}${API_VERSION}${uri}`;
+    try {
+        const response = await axios.post(url, formData, {
+            headers: {
+                "accept": "*/*",
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "multipart/form-data"
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error('Error fetching data from url:', url, error.message);
+        throw error;
     }
 };
 
-// to retrieve albums
-const fetchGetDataWithAuth = async (uri) =>{
+// GET with auth
+const fetchGetDataWithAuth = async (uri) => {
     const token = localStorage.getItem('token');
-    const url = `${API_VERSION}${uri}`;
-    try{
-    const response = await axios.get(url, {
-        headers :{                                              // passing headers
-        "Authorization" : `Bearer ${token}`,
-    }}
-    );
-    return response;
-    }
-    catch(error){
-        // handle exceptions/errors
-        console.error('Error fetching data from url: ', url, error.message);
-        throw(error);
+    const url = `${API_BASE}${API_VERSION}${uri}`;
+    try {
+        const response = await axios.get(url, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        return response;
+    } catch (error) {
+        console.error('Error fetching data from url:', url, error.message);
+        throw error;
     }
 };
 
-const fetchDeleteDataWithAuth = async (uri) =>{
+// DELETE with auth
+const fetchDeleteDataWithAuth = async (uri) => {
     const token = localStorage.getItem('token');
-    const url = `${API_VERSION}${uri}`;
-    try{
-    const response = await axios.delete(url, {
-        headers :{                                              // passing headers
-        "Authorization" : `Bearer ${token}`,
-    }}
-    );
-    return response;
-    }
-    catch(error){
-        // handle exceptions/errors
-        console.error('Error fetching data from url: ', url, error.message);
-        throw(error);
+    const url = `${API_BASE}${API_VERSION}${uri}`;
+    try {
+        const response = await axios.delete(url, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        return response;
+    } catch (error) {
+        console.error('Error fetching data from url:', url, error.message);
+        throw error;
     }
 };
 
-const fetchGetDataWithAuthArrayBuffer = (uri) =>{
-
+// GET ArrayBuffer (binary) with auth
+const fetchGetDataWithAuthArrayBuffer = (uri) => {
     const token = localStorage.getItem('token');
-    const url = `${API_VERSION}${uri}`;
-    try{
-    const response = axios.get(url, {
-        headers :{                                              // passing headers
-        "Authorization" : `Bearer ${token}`,
-    },  
-    responseType : 'arraybuffer'                    // telling http call to return response as arrayBuffer
-}
-    );
-    return response;
+    const url = `${API_BASE}${API_VERSION}${uri}`;
+    try {
+        return axios.get(url, {
+            headers: { "Authorization": `Bearer ${token}` },
+            responseType: 'arraybuffer'
+        });
+    } catch (error) {
+        console.error('Error fetching data from url:', url, error.message);
+        throw error;
     }
-    catch(error){
-        // handle exceptions/errors
-        console.error('Error fetching data from url: ', url, error.message);
-        throw(error);
-    }
-}
+};
 
-// for downloadingphoto we need blob data
-const fetchGetBlobDataWithAuth = async (uri) =>{
+// GET Blob data with auth
+const fetchGetBlobDataWithAuth = async (uri) => {
     const token = localStorage.getItem('token');
-    const url = `${API_VERSION}${uri}`;
-    try{
-    const response = await axios.get(url, {
-        headers :{                                              // passing headers
-        "Authorization" : `Bearer ${token}`,
-    },
-    "responseType" : "blob"
-}
-    );
-    return response;
-    }
-    catch(error){
-        // handle exceptions/errors
-        console.error('Error fetching data from url: ', url, error.message);
-        throw(error);
+    const url = `${API_BASE}${API_VERSION}${uri}`;
+    try {
+        const response = await axios.get(url, {
+            headers: { "Authorization": `Bearer ${token}` },
+            responseType: "blob"
+        });
+        return response;
+    } catch (error) {
+        console.error('Error fetching data from url:', url, error.message);
+        throw error;
     }
 };
 
 export default fetchGetData;
-export {fetchPostData, fetchPostDataWithAuth, fetchGetDataWithAuth, fetchDeleteDataWithAuth,
-    fetchPostFileUploadWithAuth, fetchPutDataWithAuth, fetchGetDataWithAuthArrayBuffer, fetchGetBlobDataWithAuth};
+export {
+    fetchPostData,
+    fetchPostDataWithAuth,
+    fetchGetDataWithAuth,
+    fetchDeleteDataWithAuth,
+    fetchPostFileUploadWithAuth,
+    fetchPutDataWithAuth,
+    fetchGetDataWithAuthArrayBuffer,
+    fetchGetBlobDataWithAuth
+};
